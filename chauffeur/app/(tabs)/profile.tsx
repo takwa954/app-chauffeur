@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import {
-  Alert,
-  ActivityIndicator,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -14,74 +12,12 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { BASE_URL } from "../../lib/api";
-import { getToken } from "../../lib/storage";
 
 export default function ProfileScreen() {
   const [darkMode, setDarkMode] = useState(false);
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordLoading, setPasswordLoading] = useState(false);
-async function handleChangePassword() {
-  
-  if (!currentPassword.trim() || !newPassword.trim() || !confirmPassword.trim()) {
-    Alert.alert("Erreur", "Veuillez remplir tous les champs.");
-    return;
-  }
-
-  if (newPassword !== confirmPassword) {
-    Alert.alert("Erreur", "New password and confirm password do not match.");
-    return;
-  }
-
-  try {
-    setPasswordLoading(true);
-    console.log("change password started");
-
-    const token = await getToken();
-    console.log("token =", token);
-
-    const response = await fetch(`${BASE_URL}/api/settings/password`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        currentPassword,
-        newPassword,
-        confirmPassword,
-      }),
-    });
-
-    console.log("response status =", response.status);
-
-    if (!response.ok) {
-      const text = await response.text();
-      console.log("backend error =", text);
-      throw new Error(text || "Password change failed");
-    }
-
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
-
-    Alert.alert("Succès", "Mot de passe mis à jour.");
-  } catch (error: any) {
-    console.log("change password error =", error);
-    Alert.alert(
-      "Erreur",
-      error?.message || "Impossible de changer le mot de passe."
-    );
-  } finally {
-    setPasswordLoading(false);
-  }
-}
 
   return (
     <SafeAreaView style={styles.container}>
@@ -162,8 +98,6 @@ async function handleChangePassword() {
               placeholder="Enter current password"
               placeholderTextColor="#9CA3AF"
               secureTextEntry={!showCurrent}
-              value={currentPassword}
-              onChangeText={setCurrentPassword}
             />
             <TouchableOpacity onPress={() => setShowCurrent(!showCurrent)}>
               <Ionicons
@@ -182,8 +116,6 @@ async function handleChangePassword() {
               placeholder="Enter new password"
               placeholderTextColor="#9CA3AF"
               secureTextEntry={!showNew}
-              value={newPassword}
-              onChangeText={setNewPassword}
             />
             <TouchableOpacity onPress={() => setShowNew(!showNew)}>
               <Ionicons
@@ -202,8 +134,6 @@ async function handleChangePassword() {
               placeholder="Confirm new password"
               placeholderTextColor="#9CA3AF"
               secureTextEntry={!showConfirm}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
             />
             <TouchableOpacity onPress={() => setShowConfirm(!showConfirm)}>
               <Ionicons
@@ -214,18 +144,9 @@ async function handleChangePassword() {
             </TouchableOpacity>
           </View>
 
-        <TouchableOpacity
-          style={styles.updateButton}
-          activeOpacity={0.85}
-          onPress={handleChangePassword}
-          disabled={passwordLoading}
-        >
-          {passwordLoading ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
+          <TouchableOpacity style={styles.updateButton} activeOpacity={0.85}>
             <Text style={styles.updateButtonText}>Update Password</Text>
-          )}
-        </TouchableOpacity>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.card}>

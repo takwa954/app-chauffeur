@@ -2,7 +2,6 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
-
 const GOOGLE_MAPS_APIKEY = "YOUR_API_KEY";
 
 export default function MapScreen() {
@@ -71,5 +70,5 @@ export default function MapScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  map: { flex: 1 },w
+  map: { flex: 1 },
 });

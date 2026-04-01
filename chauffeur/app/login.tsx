@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -13,60 +11,12 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { BASE_URL } from "../lib/api";
-import { saveAuth } from "../lib/storage";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  async function handleLogin() {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert("Erreur", "Veuillez saisir username/email et mot de passe.");
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const response = await fetch(`${BASE_URL}/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          usernameOrEmail: email.trim(),
-          password: password,
-        }),
-      });
-
-      if (!response.ok) {
-        
-        throw new Error( "mot de passe ou username/email incorrect." );
-      }
-
-      const data = await response.json();
-
-      await saveAuth(data.token, {
-        userId: data.userId,
-        username: data.username,
-        role: data.role,
-        remember,
-      });
-
-      router.replace("/(tabs)/dashboard");
-    } catch (error: any) {
-      Alert.alert(
-        "Login failed",
-        error?.message || "Impossible de se connecter."
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
 
   return (
     <LinearGradient
@@ -112,7 +62,6 @@ export default function LoginScreen() {
                   placeholder="Enter your ID or email"
                   placeholderTextColor="#9CA3AF"
                   style={styles.input}
-                  autoCapitalize="none"
                 />
               </View>
             </View>
@@ -170,8 +119,7 @@ export default function LoginScreen() {
             <TouchableOpacity
               activeOpacity={0.9}
               style={styles.buttonShadow}
-              onPress={handleLogin}
-              disabled={loading}
+              onPress={() => router.replace("/(tabs)/dashboard")}
             >
               <LinearGradient
                 colors={["#12905C", "#1CC37B"]}
@@ -179,11 +127,7 @@ export default function LoginScreen() {
                 end={{ x: 1, y: 0 }}
                 style={styles.loginButton}
               >
-                {loading ? (
-                  <ActivityIndicator color="#FFFFFF" />
-                ) : (
-                  <Text style={styles.loginButtonText}>Login</Text>
-                )}
+                <Text style={styles.loginButtonText}>Login</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
